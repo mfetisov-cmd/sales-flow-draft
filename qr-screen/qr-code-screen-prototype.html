@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vivid - Send Offer to Client</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      background-color: #ffffff;
+      color: #1a1a1a;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    button {
+      touch-action: manipulation;
+    }
+
+    .container {
+      max-width: 440px;
+      width: 100%;
+      padding: 20px;
+    }
+
+    /* Back button */
+    .back-button {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #f5f5f5;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      margin-bottom: 24px;
+    }
+
+    .back-button:hover {
+      background: #ebebeb;
+      transform: scale(1.05);
+    }
+
+    .back-button:active {
+      transform: scale(0.95);
+    }
+
+    .back-button:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.4);
+    }
+
+    .back-button svg {
+      width: 20px;
+      height: 20px;
+      color: #1a1a1a;
+    }
+
+    /* Title */
+    h1 {
+      font-size: 32px;
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 32px;
+      color: #1a1a1a;
+    }
+
+    /* QR Code Section */
+    .qr-section {
+      display: flex;
+      justify-content: center;
+      padding: 24px 0;
+    }
+
+    .qr-code {
+      width: 200px;
+      height: 200px;
+      background: #fff;
+      padding: 12px;
+      border-radius: 16px;
+      border: 1px solid #E5E7EB;
+      position: relative;
+    }
+
+    .qr-code img {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* QR Code generated with inline SVG pattern */
+    .qr-placeholder {
+      width: 100%;
+      height: 100%;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Crect fill='white' width='200' height='200'/%3E%3Cg fill='%231a1a1a'%3E%3Crect x='10' y='10' width='50' height='50'/%3E%3Crect x='20' y='20' width='30' height='30' fill='white'/%3E%3Crect x='25' y='25' width='20' height='20'/%3E%3Crect x='140' y='10' width='50' height='50'/%3E%3Crect x='150' y='20' width='30' height='30' fill='white'/%3E%3Crect x='155' y='25' width='20' height='20'/%3E%3Crect x='10' y='140' width='50' height='50'/%3E%3Crect x='20' y='150' width='30' height='30' fill='white'/%3E%3Crect x='25' y='155' width='20' height='20'/%3E%3Crect x='70' y='10' width='10' height='10'/%3E%3Crect x='90' y='10' width='10' height='10'/%3E%3Crect x='110' y='10' width='10' height='10'/%3E%3Crect x='70' y='30' width='10' height='10'/%3E%3Crect x='90' y='30' width='20' height='10'/%3E%3Crect x='120' y='30' width='10' height='10'/%3E%3Crect x='70' y='50' width='20' height='10'/%3E%3Crect x='100' y='50' width='10' height='10'/%3E%3Crect x='120' y='50' width='10' height='10'/%3E%3Crect x='10' y='70' width='10' height='10'/%3E%3Crect x='30' y='70' width='20' height='10'/%3E%3Crect x='60' y='70' width='10' height='10'/%3E%3Crect x='80' y='70' width='10' height='10'/%3E%3Crect x='100' y='70' width='20' height='10'/%3E%3Crect x='130' y='70' width='10' height='10'/%3E%3Crect x='150' y='70' width='20' height='10'/%3E%3Crect x='180' y='70' width='10' height='10'/%3E%3Crect x='10' y='90' width='20' height='10'/%3E%3Crect x='40' y='90' width='10' height='10'/%3E%3Crect x='60' y='90' width='20' height='10'/%3E%3Crect x='90' y='90' width='20' height='20' rx='4'/%3E%3Crect x='120' y='90' width='10' height='10'/%3E%3Crect x='140' y='90' width='20' height='10'/%3E%3Crect x='170' y='90' width='20' height='10'/%3E%3Crect x='10' y='110' width='10' height='10'/%3E%3Crect x='30' y='110' width='10' height='10'/%3E%3Crect x='50' y='110' width='20' height='10'/%3E%3Crect x='80' y='110' width='10' height='10'/%3E%3Crect x='120' y='110' width='20' height='10'/%3E%3Crect x='150' y='110' width='10' height='10'/%3E%3Crect x='170' y='110' width='20' height='10'/%3E%3Crect x='70' y='130' width='10' height='10'/%3E%3Crect x='90' y='130' width='20' height='10'/%3E%3Crect x='120' y='130' width='10' height='10'/%3E%3Crect x='140' y='130' width='10' height='10'/%3E%3Crect x='160' y='130' width='30' height='10'/%3E%3Crect x='70' y='150' width='20' height='10'/%3E%3Crect x='100' y='150' width='10' height='10'/%3E%3Crect x='120' y='150' width='20' height='10'/%3E%3Crect x='150' y='150' width='10' height='10'/%3E%3Crect x='170' y='150' width='20' height='10'/%3E%3Crect x='70' y='170' width='10' height='10'/%3E%3Crect x='90' y='170' width='30' height='10'/%3E%3Crect x='130' y='170' width='20' height='10'/%3E%3Crect x='160' y='170' width='10' height='10'/%3E%3Crect x='180' y='170' width='10' height='10'/%3E%3Crect x='140' y='140' width='50' height='50' fill='white' stroke='%231a1a1a' stroke-width='3'/%3E%3C/g%3E%3C/svg%3E");
+      background-size: cover;
+      position: relative;
+    }
+
+    .qr-logo {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 44px;
+      height: 44px;
+      background: #1a1a1a;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    /* Primary Button (Purple) */
+    .btn-primary {
+      width: 100%;
+      padding: 16px 24px;
+      background: #8B5CF6;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-primary:hover {
+      background: #7C3AED;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
+    }
+
+    .btn-primary:disabled {
+      background: #D1D5DB;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .btn-primary:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.4);
+    }
+
+    .btn-primary.success {
+      background: #10B981;
+    }
+
+    .btn-primary.success:hover {
+      background: #059669;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+    }
+
+    /* Secondary Button (Outline) */
+    .btn-secondary {
+      width: 100%;
+      padding: 16px 24px;
+      background: white;
+      color: #8B5CF6;
+      border: 2px solid #8B5CF6;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-secondary:hover {
+      background: #F5F3FF;
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary:active {
+      transform: translateY(0);
+    }
+
+    .btn-secondary:disabled {
+      border-color: #D1D5DB;
+      color: #9CA3AF;
+      cursor: not-allowed;
+      transform: none;
+      background: white;
+    }
+
+    .btn-secondary:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.3);
+    }
+
+    /* Tab Switcher */
+    .tab-switcher {
+      display: flex;
+      margin-bottom: 24px;
+    }
+
+    .tab-container {
+      display: flex;
+      width: 100%;
+      background: #F3F4F6;
+      border-radius: 12px;
+      padding: 4px;
+      gap: 4px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 12px 16px;
+      border: none;
+      background: transparent;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 500;
+      color: #6B7280;
+      cursor: pointer;
+      transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .tab-btn:hover:not(.active) {
+      color: #374151;
+      background: rgba(255,255,255,0.5);
+    }
+
+    .tab-btn:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 2px #8B5CF6;
+    }
+
+    .tab-btn.active {
+      background: #FFFFFF;
+      color: #1a1a1a;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    /* Tab Content */
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+      animation: fadeIn 0.15s ease;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .tab-content.active {
+        animation: none;
+      }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .tab-inner {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .tab-description {
+      color: #6B7280;
+      font-size: 15px;
+      line-height: 1.5;
+      text-wrap: balance;
+    }
+
+    /* Input group */
+    .input-group {
+      margin-bottom: 0;
+    }
+
+    /* Send SMS button */
+    .btn-continue {
+      width: 100%;
+      padding: 18px 24px;
+      background: #8B5CF6;
+      color: white;
+      border: none;
+      border-radius: 14px;
+      font-size: 17px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: background-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .btn-continue:hover:not(:disabled) {
+      background: #7C3AED;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(139, 92, 246, 0.4);
+    }
+
+    .btn-continue:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    .btn-continue:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.4);
+    }
+
+    .btn-continue:disabled {
+      background: #D1D5DB;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .btn-continue.success {
+      background: #10B981;
+    }
+
+    .btn-continue.sending {
+      background: #7C3AED;
+    }
+
+    .btn-continue .arrow {
+      font-size: 20px;
+      transition: transform 0.15s ease;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .btn-continue .arrow {
+        transition: none;
+      }
+    }
+
+    .btn-continue:hover:not(:disabled) .arrow {
+      transform: translateX(4px);
+    }
+
+    /* Spinner */
+    .spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .spinner {
+        animation: none;
+        border-top-color: rgba(255,255,255,0.7);
+      }
+    }
+
+    /* Success checkmark */
+    .checkmark {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* Create new offer button */
+    .new-offer-section {
+      margin-top: 32px;
+      padding-top: 24px;
+      border-top: 1px solid #E5E7EB;
+    }
+
+    /* Toast notification */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: #1a1a1a;
+      color: white;
+      padding: 14px 24px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+      opacity: 0;
+      transition: all 0.3s ease;
+      z-index: 1000;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .toast {
+        transition: opacity 0.15s ease;
+      }
+    }
+
+    .toast.success {
+      background: #10B981;
+    }
+
+    .toast.error {
+      background: #EF4444;
+    }
+
+    /* Phone input with country code */
+    .phone-input-wrapper {
+      display: flex;
+      width: 100%;
+      border: 1px solid #E5E7EB;
+      border-radius: 12px;
+      overflow: hidden;
+      transition: all 0.2s ease;
+      background: #FFFFFF;
+    }
+
+    .phone-input-wrapper:focus-within {
+      border-color: #8B5CF6;
+      box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+    }
+
+    .country-code-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 16px 14px;
+      background: #F9FAFB;
+      border: none;
+      border-right: 1px solid #E5E7EB;
+      font-size: 15px;
+      color: #374151;
+      cursor: pointer;
+      outline: none;
+      white-space: nowrap;
+    }
+
+    .country-code-btn:hover {
+      background: #F3F4F6;
+    }
+
+    .country-code-btn:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px #8B5CF6;
+    }
+
+    .country-code-btn .flag {
+      font-size: 20px;
+    }
+
+    .country-code-btn .code {
+      font-weight: 500;
+    }
+
+    .country-code-btn .chevron {
+      font-size: 12px;
+      color: #9CA3AF;
+    }
+
+    .phone-input {
+      flex: 1;
+      padding: 16px 18px;
+      border: none;
+      font-size: 16px;
+      outline: none;
+      background: transparent;
+    }
+
+    .phone-input::placeholder {
+      color: #9CA3AF;
+    }
+
+    .phone-input:focus {
+      outline: none;
+    }
+
+    /* Country dropdown */
+    .country-dropdown {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: white;
+      border: 1px solid #E5E7EB;
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      margin-top: 4px;
+      z-index: 100;
+      display: none;
+      max-height: 240px;
+      overflow-y: auto;
+    }
+
+    .country-dropdown.show {
+      display: block;
+      animation: dropdownFade 0.15s ease;
+    }
+
+    @keyframes dropdownFade {
+      from { opacity: 0; transform: translateY(-8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .country-option {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+
+    .country-option:hover {
+      background: #F3F4F6;
+    }
+
+    .country-option.selected {
+      background: #F5F3FF;
+    }
+
+    .country-option .flag {
+      font-size: 20px;
+    }
+
+    .country-option .name {
+      flex: 1;
+      font-size: 15px;
+      color: #374151;
+    }
+
+    .country-option .dial-code {
+      font-size: 14px;
+      color: #6B7280;
+    }
+
+    .phone-input-container {
+      position: relative;
+    }
+
+    /* Icon styles */
+    .icon {
+      width: 18px;
+      height: 18px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Back Button -->
+    <button class="back-button" aria-label="Go back" onclick="showToast('Going back…', 'info')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+      </svg>
+    </button>
+
+    <!-- Title -->
+    <h1>Send offer to client</h1>
+
+    <!-- Tab Switcher -->
+    <div class="tab-switcher">
+      <div class="tab-container">
+        <button class="tab-btn active" data-tab="sms" onclick="switchTab('sms')">Send via SMS</button>
+        <button class="tab-btn" data-tab="qr" onclick="switchTab('qr')">Show QR Code</button>
+      </div>
+    </div>
+
+    <!-- SMS Tab Content -->
+    <div class="tab-content active" id="smsTab">
+      <div class="tab-inner">
+        <p class="tab-description">Enter client's phone number to send them the application link</p>
+        <div class="input-group">
+          <div class="phone-input-container">
+            <div class="phone-input-wrapper" id="phoneWrapper">
+              <button class="country-code-btn" type="button" aria-label="Select country code" onclick="toggleCountryDropdown(event)">
+                <span class="flag" id="selectedFlag" aria-hidden="true">🇩🇪</span>
+                <span class="code" id="selectedCode">+49</span>
+                <span class="chevron" aria-hidden="true">▼</span>
+              </button>
+              <input 
+                type="tel" 
+                class="phone-input" 
+                id="phoneInput" 
+                placeholder="Phone number…"
+                autocomplete="tel"
+                inputmode="tel"
+                aria-label="Phone number"
+                oninput="validateInput()"
+              >
+            </div>
+            <div class="country-dropdown" id="countryDropdown" role="listbox" aria-label="Country codes">
+              <div class="country-option selected" data-code="+49" data-flag="🇩🇪" role="option" aria-selected="true" onclick="selectCountry(this)">
+                <span class="flag" aria-hidden="true">🇩🇪</span>
+                <span class="name">Germany</span>
+                <span class="dial-code">+49</span>
+              </div>
+              <div class="country-option" data-code="+34" data-flag="🇪🇸" role="option" onclick="selectCountry(this)">
+                <span class="flag" aria-hidden="true">🇪🇸</span>
+                <span class="name">Spain</span>
+                <span class="dial-code">+34</span>
+              </div>
+              <div class="country-option" data-code="+33" data-flag="🇫🇷" role="option" onclick="selectCountry(this)">
+                <span class="flag" aria-hidden="true">🇫🇷</span>
+                <span class="name">France</span>
+                <span class="dial-code">+33</span>
+              </div>
+              <div class="country-option" data-code="+39" data-flag="🇮🇹" role="option" onclick="selectCountry(this)">
+                <span class="flag" aria-hidden="true">🇮🇹</span>
+                <span class="name">Italy</span>
+                <span class="dial-code">+39</span>
+              </div>
+              <div class="country-option" data-code="+31" data-flag="🇳🇱" role="option" onclick="selectCountry(this)">
+                <span class="flag" aria-hidden="true">🇳🇱</span>
+                <span class="name">Netherlands</span>
+                <span class="dial-code">+31</span>
+              </div>
+              <div class="country-option" data-code="+352" data-flag="🇱🇺" role="option" onclick="selectCountry(this)">
+                <span class="flag" aria-hidden="true">🇱🇺</span>
+                <span class="name">Luxembourg</span>
+                <span class="dial-code">+352</span>
+              </div>
+              <div class="country-option" data-code="+43" data-flag="🇦🇹" role="option" onclick="selectCountry(this)">
+                <span class="flag" aria-hidden="true">🇦🇹</span>
+                <span class="name">Austria</span>
+                <span class="dial-code">+43</span>
+              </div>
+              <div class="country-option" data-code="+41" data-flag="🇨🇭" role="option" onclick="selectCountry(this)">
+                <span class="flag" aria-hidden="true">🇨🇭</span>
+                <span class="name">Switzerland</span>
+                <span class="dial-code">+41</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Send SMS Button -->
+        <button class="btn-continue" id="sendSmsBtn" onclick="sendSms(this)" disabled>
+          <span>Send SMS</span>
+          <span class="arrow" aria-hidden="true">→</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- QR Code Tab Content -->
+    <div class="tab-content" id="qrTab">
+      <div class="tab-inner">
+        <p class="tab-description">Show this QR code to the client or copy the link</p>
+        <!-- QR Code Section -->
+        <div class="qr-section">
+          <div class="qr-code">
+            <div class="qr-placeholder">
+              <div class="qr-logo" aria-hidden="true">V</div>
+            </div>
+          </div>
+        </div>
+        <!-- Copy Link Button -->
+        <button class="btn-primary" onclick="copyLink(this)">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <rect x="9" y="9" width="13" height="13" rx="2"/>
+            <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+          </svg>
+          <span>Copy Link</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Create New Offer -->
+    <div class="new-offer-section">
+      <button class="btn-secondary" onclick="createNewOffer(this)">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M12 5v14M5 12h14"/>
+        </svg>
+        <span>Create New Offer</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast" role="status" aria-live="polite">
+    <svg class="icon" id="toastIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+      <path d="M20 6L9 17l-5-5"/>
+    </svg>
+    <span id="toastMessage">Link copied!</span>
+  </div>
+
+  <script>
+    let currentTab = 'sms';
+    let selectedCountryCode = '+49';
+
+    // Tab switching
+    function switchTab(tab) {
+      currentTab = tab;
+      
+      // Update tab buttons
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.tab === tab);
+      });
+      
+      // Update tab content
+      document.getElementById('smsTab').classList.toggle('active', tab === 'sms');
+      document.getElementById('qrTab').classList.toggle('active', tab === 'qr');
+      
+      // Reset validation when switching to SMS
+      if (tab === 'sms') {
+        validateInput();
+      }
+    }
+
+    // Validate phone input
+    function validateInput() {
+      const btn = document.getElementById('sendSmsBtn');
+      const phone = document.getElementById('phoneInput').value;
+      const phoneRegex = /^[\d\s]{6,}$/;
+      btn.disabled = !phoneRegex.test(phone.replace(/\s/g, ''));
+    }
+
+    // Country dropdown toggle
+    function toggleCountryDropdown(event) {
+      event.stopPropagation();
+      const dropdown = document.getElementById('countryDropdown');
+      dropdown.classList.toggle('show');
+    }
+
+    // Select country
+    function selectCountry(option) {
+      const code = option.dataset.code;
+      const flag = option.dataset.flag;
+      
+      selectedCountryCode = code;
+      document.getElementById('selectedFlag').textContent = flag;
+      document.getElementById('selectedCode').textContent = code;
+      
+      // Update selected state and aria
+      document.querySelectorAll('.country-option').forEach(opt => {
+        const isSelected = opt === option;
+        opt.classList.toggle('selected', isSelected);
+        opt.setAttribute('aria-selected', isSelected);
+      });
+      
+      // Close dropdown
+      document.getElementById('countryDropdown').classList.remove('show');
+      
+      // Focus phone input
+      document.getElementById('phoneInput').focus();
+    }
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.phone-input-container')) {
+        document.getElementById('countryDropdown').classList.remove('show');
+      }
+    });
+
+    // Send SMS
+    async function sendSms(btn) {
+      const originalContent = btn.innerHTML;
+      const phone = document.getElementById('phoneInput').value;
+      
+      // Show sending state
+      btn.classList.add('sending');
+      btn.disabled = true;
+      btn.innerHTML = '<div class="spinner" aria-label="Sending…"></div><span>Sending…</span>';
+      
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      // Show success
+      btn.classList.remove('sending');
+      btn.classList.add('success');
+      btn.innerHTML = `
+        <svg class="checkmark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M20 6L9 17l-5-5"/>
+        </svg>
+        <span>Sent!</span>
+      `;
+      
+      showToast(`SMS sent to ${selectedCountryCode} ${phone}`, 'success');
+      
+      // Reset after delay
+      setTimeout(() => {
+        btn.classList.remove('success');
+        btn.innerHTML = originalContent;
+        validateInput();
+      }, 3000);
+    }
+
+    // Copy link functionality
+    function copyLink(btn) {
+      const demoLink = 'https://vivid.money/offer/abc123xyz';
+      navigator.clipboard.writeText(demoLink).then(() => {
+        showToast('Link copied to clipboard!', 'success');
+        
+        // Visual feedback on button
+        const originalContent = btn.innerHTML;
+        btn.classList.add('success');
+        btn.innerHTML = `
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M20 6L9 17l-5-5"/>
+          </svg>
+          <span>Copied!</span>
+        `;
+        
+        setTimeout(() => {
+          btn.classList.remove('success');
+          btn.innerHTML = originalContent;
+        }, 2000);
+      }).catch(() => {
+        showToast('Link copied!', 'success');
+      });
+    }
+
+    // Create new offer
+    function createNewOffer(btn) {
+      showToast('Creating new offer…', 'info');
+    }
+
+    // Toast notification
+    function showToast(message, type = 'success') {
+      const toast = document.getElementById('toast');
+      const toastMessage = document.getElementById('toastMessage');
+      const toastIcon = document.getElementById('toastIcon');
+      
+      toastMessage.textContent = message;
+      toast.className = 'toast ' + type;
+      
+      if (type === 'success') {
+        toastIcon.innerHTML = '<path d="M20 6L9 17l-5-5"/>';
+      } else if (type === 'error') {
+        toastIcon.innerHTML = '<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>';
+      } else {
+        toastIcon.innerHTML = '<circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/>';
+      }
+      
+      toast.classList.add('show');
+      
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3000);
+    }
+  </script>
+</body>
+</html>

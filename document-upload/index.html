@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vivid - Upload Documents</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      background-color: #F9FAFB;
+      color: #1a1a1a;
+      min-height: 100vh;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* iPad-native layout */
+    .page {
+      max-width: 720px;
+      margin: 0 auto;
+      min-height: 100vh;
+      background: #ffffff;
+      padding: 40px 48px 40px;
+      position: relative;
+    }
+
+    @media (max-width: 768px) {
+      .page {
+        padding: 24px 24px 32px;
+      }
+    }
+
+    /* Title */
+    h1 {
+      font-size: 32px;
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 16px;
+      color: #1a1a1a;
+    }
+
+    .description {
+      font-size: 16px;
+      color: #4B5563;
+      line-height: 1.6;
+      margin-bottom: 40px;
+    }
+
+    /* Section label */
+    .section-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #9CA3AF;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 16px;
+    }
+
+    /* Upload zone — centered, tall, matches Vivid invoice upload */
+    .upload-zone {
+      border: 2px dashed #D1D5DB;
+      border-radius: 16px;
+      padding: 64px 32px;
+      background: #F9FAFB;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: 12px;
+    }
+
+    .upload-zone:hover {
+      border-color: #8B5CF6;
+      background: #FAF5FF;
+    }
+
+    .upload-zone.dragover {
+      border-color: #8B5CF6;
+      background: #F5F3FF;
+    }
+
+    .upload-zone-icon {
+      margin-bottom: 4px;
+    }
+
+    .upload-zone-icon svg {
+      width: 28px;
+      height: 28px;
+      color: #6B7280;
+    }
+
+    .upload-zone-text {
+      font-size: 15px;
+      color: #374151;
+      font-weight: 500;
+      line-height: 1.5;
+    }
+
+    .upload-zone-hint {
+      font-size: 13px;
+      color: #9CA3AF;
+    }
+
+    /* (upload buttons removed — not in current Vivid UI) */
+
+    /* File items — matches Vivid screenshot */
+    .file-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .file-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px 20px;
+      background: #F9FAFB;
+      border-radius: 12px;
+      animation: fadeSlideIn 0.3s ease;
+    }
+
+    @keyframes fadeSlideIn {
+      from { opacity: 0; transform: translateY(-6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Green checkmark circle — exactly like the screenshot */
+    .file-check {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #10B981;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .file-check svg {
+      width: 18px;
+      height: 18px;
+      color: #fff;
+    }
+
+    /* Uploading spinner circle */
+    .file-spinner {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #EDE9FE;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .file-spinner-inner {
+      width: 20px;
+      height: 20px;
+      border: 2.5px solid #DDD6FE;
+      border-top-color: #8B5CF6;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Error circle */
+    .file-error-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #FEE2E2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .file-error-icon svg {
+      width: 18px;
+      height: 18px;
+      color: #EF4444;
+    }
+
+    .file-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .file-name {
+      font-size: 15px;
+      font-weight: 500;
+      color: #1a1a1a;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .file-status {
+      font-size: 13px;
+      color: #6B7280;
+      margin-top: 2px;
+    }
+
+    .file-status.success {
+      color: #6B7280;
+    }
+
+    .file-status.uploading {
+      color: #8B5CF6;
+    }
+
+    .file-status.error {
+      color: #EF4444;
+    }
+
+    .file-status a {
+      color: #8B5CF6;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .file-delete {
+      width: 40px;
+      height: 40px;
+      border: none;
+      background: transparent;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+      flex-shrink: 0;
+    }
+
+    .file-delete:hover {
+      background: #F3F4F6;
+    }
+
+    .file-delete svg {
+      width: 20px;
+      height: 20px;
+      color: #9CA3AF;
+    }
+
+    .file-delete:hover svg {
+      color: #6B7280;
+    }
+
+    /* Progress bar (for uploading state) */
+    .progress-wrap {
+      height: 3px;
+      background: #E5E7EB;
+      border-radius: 2px;
+      margin-top: 6px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: #8B5CF6;
+      border-radius: 2px;
+      transition: width 0.3s ease;
+    }
+
+    /* Add more / comment links — matches Vivid "+" style */
+    .action-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 0;
+      border: none;
+      background: none;
+      font-size: 15px;
+      font-weight: 500;
+      color: #8B5CF6;
+      cursor: pointer;
+      transition: color 0.15s ease;
+      margin-top: 8px;
+    }
+
+    .action-link:hover {
+      color: #7C3AED;
+    }
+
+    .action-link svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    /* Comment textarea */
+    .comment-area {
+      display: none;
+      margin-top: 12px;
+    }
+
+    .comment-area.show {
+      display: block;
+      animation: fadeSlideIn 0.2s ease;
+    }
+
+    .comment-area textarea {
+      width: 100%;
+      padding: 16px 20px;
+      font-size: 15px;
+      border: none;
+      border-radius: 12px;
+      background: #F5F5F5;
+      outline: none;
+      resize: none;
+      min-height: 80px;
+      font-family: inherit;
+      transition: all 0.2s ease;
+    }
+
+    .comment-area textarea:focus {
+      background: #EFEFEF;
+      box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.3);
+    }
+
+    .comment-area textarea::placeholder {
+      color: #9CA3AF;
+    }
+
+    /* Divider */
+    .divider {
+      height: 1px;
+      background: #F3F4F6;
+      margin: 36px 0;
+    }
+
+    /* Bottom bar — matches Vivid: round back button + purple pill CTA */
+    .bottom-bar {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-top: 40px;
+    }
+
+    .btn-round-back {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: #F3F4F6;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    .btn-round-back:hover {
+      background: #E5E7EB;
+    }
+
+    .btn-round-back:active {
+      transform: scale(0.95);
+    }
+
+    .btn-round-back svg {
+      width: 22px;
+      height: 22px;
+      color: #1a1a1a;
+    }
+
+    .btn-cta {
+      flex: 1;
+      padding: 18px 32px;
+      background: #8B5CF6;
+      color: white;
+      border: none;
+      border-radius: 50px;
+      font-size: 17px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: all 0.2s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-cta:hover:not(:disabled) {
+      background: #7C3AED;
+      box-shadow: 0 4px 20px rgba(139, 92, 246, 0.4);
+    }
+
+    .btn-cta:active:not(:disabled) {
+      transform: scale(0.99);
+    }
+
+    .btn-cta:disabled {
+      background: #D1D5DB;
+      cursor: not-allowed;
+    }
+
+    .btn-cta .arrow {
+      font-size: 22px;
+      transition: transform 0.15s ease;
+    }
+
+    .btn-cta:hover:not(:disabled) .arrow {
+      transform: translateX(4px);
+    }
+
+    .btn-cta.success-state {
+      background: #10B981;
+    }
+
+    /* Spinner inside button */
+    .btn-spinner {
+      width: 22px;
+      height: 22px;
+      border: 2.5px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: #1a1a1a;
+      color: white;
+      padding: 16px 28px;
+      border-radius: 14px;
+      font-size: 15px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+      opacity: 0;
+      transition: all 0.3s ease;
+      z-index: 1000;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    .toast.success { background: #10B981; }
+    .toast.error { background: #EF4444; }
+
+    .toast svg {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+    }
+
+    /* Hidden inputs */
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- Title -->
+    <h1>Upload store photos and company documents</h1>
+    <p class="description">Take photos of the client's store and upload the Gewerbeanmeldung to complete the POS terminal application.</p>
+
+    <!-- ========== SECTION 1: Store Photos ========== -->
+    <div class="section-label">Store / Location photos</div>
+
+    <div id="storeUploadZone" class="upload-zone" onclick="document.getElementById('storeGallery').click()">
+      <div class="upload-zone-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+          <polyline points="17 8 12 3 7 8"/>
+          <line x1="12" y1="3" x2="12" y2="15"/>
+        </svg>
+      </div>
+      <div class="upload-zone-text">Drag and drop here or click to upload</div>
+      <div class="upload-zone-hint">.jpg, .jpeg, .png, .heic, .pdf file less 10 MB</div>
+    </div>
+
+
+    <div id="storeFileList" class="file-list hidden"></div>
+    <button id="storeAddMore" class="action-link hidden" onclick="document.getElementById('storeGallery').click();">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Add more photos
+    </button>
+
+    <!-- Comment for store photos -->
+    <button id="storeCommentToggle" class="action-link" onclick="toggleComment('store')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Add an optional comment on the file
+    </button>
+    <div id="storeCommentArea" class="comment-area">
+      <textarea placeholder="E.g. photos taken on location visit..." id="storeCommentInput"></textarea>
+    </div>
+
+    <input type="file" class="hidden" id="storeGallery" accept="image/*,.pdf" multiple onchange="handleUpload(this,'store')">
+
+    <!-- Divider -->
+    <div class="divider"></div>
+
+    <!-- ========== SECTION 2: GEWA ========== -->
+    <div class="section-label">Gewerbeanmeldung (GEWA)</div>
+
+    <div id="gewaUploadZone" class="upload-zone" onclick="document.getElementById('gewaGallery').click()">
+      <div class="upload-zone-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+          <polyline points="17 8 12 3 7 8"/>
+          <line x1="12" y1="3" x2="12" y2="15"/>
+        </svg>
+      </div>
+      <div class="upload-zone-text">Drag and drop here or click to upload</div>
+      <div class="upload-zone-hint">.pdf, .jpg, .jpeg, .png, .heic file less 10 MB</div>
+    </div>
+
+
+    <div id="gewaFileList" class="file-list hidden"></div>
+
+    <!-- Comment for GEWA -->
+    <button id="gewaCommentToggle" class="action-link" onclick="toggleComment('gewa')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Add an optional comment on the file
+    </button>
+    <div id="gewaCommentArea" class="comment-area">
+      <textarea placeholder="E.g. the document is in German..." id="gewaCommentInput"></textarea>
+    </div>
+
+    <input type="file" class="hidden" id="gewaGallery" accept="image/*,.pdf" onchange="handleUpload(this,'gewa')">
+
+    <!-- Bottom bar: ← back + Send to verification → -->
+    <div class="bottom-bar">
+      <button class="btn-round-back" onclick="showToast('Going back...','info')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+      </button>
+      <button class="btn-cta" id="submitBtn" onclick="handleSubmit(this)" disabled>
+        <span>Save & Continue</span>
+        <span class="arrow">&rarr;</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+    <span id="toastMsg">Uploaded!</span>
+  </div>
+
+  <script>
+    const files = { store: [], gewa: [] };
+
+    function handleUpload(input, section) {
+      Array.from(input.files).forEach(f => {
+        const entry = { id: Date.now() + Math.random(), name: f.name, status: 'uploading', progress: 0 };
+        files[section].push(entry);
+        render(section);
+        simulateUpload(section, entry.id);
+      });
+      input.value = '';
+    }
+
+    function simulateUpload(section, id) {
+      let p = 0;
+      const iv = setInterval(() => {
+        p += Math.random() * 30 + 10;
+        const f = files[section].find(x => x.id === id);
+        if (!f) { clearInterval(iv); return; }
+        if (p >= 100) {
+          clearInterval(iv);
+          f.status = Math.random() > 0.08 ? 'success' : 'error';
+          f.progress = 100;
+          if (f.status === 'success') showToast(f.name + ' uploaded', 'success');
+          else showToast('Failed to upload ' + f.name, 'error');
+        } else {
+          f.progress = p;
+        }
+        render(section);
+        updateCTA();
+      }, 350);
+    }
+
+    function render(section) {
+      const zone = document.getElementById(section + 'UploadZone');
+      const list = document.getElementById(section + 'FileList');
+      const addMore = document.getElementById(section + 'AddMore');
+
+      if (files[section].length === 0) {
+        zone.classList.remove('hidden');
+        list.classList.add('hidden');
+        if (addMore) addMore.classList.add('hidden');
+        return;
+      }
+
+      zone.classList.add('hidden');
+      list.classList.remove('hidden');
+      if (addMore) addMore.classList.remove('hidden');
+
+      list.innerHTML = files[section].map(f => {
+        let icon, status;
+        if (f.status === 'uploading') {
+          icon = '<div class="file-spinner"><div class="file-spinner-inner"></div></div>';
+          status = `<div class="file-status uploading">Uploading... ${Math.round(f.progress)}%</div><div class="progress-wrap"><div class="progress-fill" style="width:${f.progress}%"></div></div>`;
+        } else if (f.status === 'success') {
+          icon = '<div class="file-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></div>';
+          status = '<div class="file-status success">Uploaded</div>';
+        } else {
+          icon = '<div class="file-error-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>';
+          status = `<div class="file-status error">Upload failed — <a href="#" onclick="retry('${section}',${f.id});return false;">retry</a></div>`;
+        }
+        return `<div class="file-item">${icon}<div class="file-info"><div class="file-name">${f.name}</div>${status}</div><button class="file-delete" onclick="remove('${section}',${f.id})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg></button></div>`;
+      }).join('');
+    }
+
+    function remove(s, id) { files[s] = files[s].filter(f => f.id !== id); render(s); updateCTA(); }
+
+    function retry(s, id) {
+      const f = files[s].find(x => x.id === id);
+      if (!f) return;
+      f.status = 'uploading'; f.progress = 0;
+      render(s); simulateUpload(s, id);
+    }
+
+    function updateCTA() {
+      document.getElementById('submitBtn').disabled =
+        !(files.store.some(f => f.status === 'success') && files.gewa.some(f => f.status === 'success'));
+    }
+
+    function toggleComment(section) {
+      const area = document.getElementById(section + 'CommentArea');
+      const btn = document.getElementById(section + 'CommentToggle');
+      area.classList.toggle('show');
+      if (area.classList.contains('show')) {
+        btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/></svg> Hide comment';
+        document.getElementById(section + 'CommentInput').focus();
+      } else {
+        btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add an optional comment on the file';
+      }
+    }
+
+    async function handleSubmit(btn) {
+      const orig = btn.innerHTML;
+      btn.innerHTML = '<div class="btn-spinner"></div>';
+      btn.disabled = true;
+      await new Promise(r => setTimeout(r, 1500));
+      btn.classList.add('success-state');
+      btn.innerHTML = '<span>Saved!</span> <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" style="width:22px;height:22px;"><path d="M20 6L9 17l-5-5"/></svg>';
+      showToast('Documents saved!', 'success');
+      setTimeout(() => { btn.classList.remove('success-state'); btn.innerHTML = orig; btn.disabled = false; updateCTA(); }, 3000);
+    }
+
+    function showToast(msg, type) {
+      const t = document.getElementById('toast');
+      document.getElementById('toastMsg').textContent = msg;
+      t.className = 'toast ' + type + ' show';
+      const icon = t.querySelector('svg');
+      icon.innerHTML = type === 'error'
+        ? '<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>'
+        : '<path d="M20 6L9 17l-5-5"/>';
+      setTimeout(() => t.classList.remove('show'), 3000);
+    }
+
+    // Drag & drop
+    ['store','gewa'].forEach(s => {
+      const z = document.getElementById(s + 'UploadZone');
+      z.addEventListener('dragover', e => { e.preventDefault(); z.classList.add('dragover'); });
+      z.addEventListener('dragleave', () => z.classList.remove('dragover'));
+      z.addEventListener('drop', e => {
+        e.preventDefault(); z.classList.remove('dragover');
+        const input = document.getElementById(s + 'Gallery');
+        input.files = e.dataTransfer.files;
+        handleUpload(input, s);
+      });
+    });
+  </script>
+</body>
+</html>
