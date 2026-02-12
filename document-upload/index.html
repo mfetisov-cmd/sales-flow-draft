@@ -40,32 +40,49 @@
       font-size: 32px;
       font-weight: 700;
       line-height: 1.2;
-      margin-bottom: 16px;
+      margin-bottom: 32px;
       color: #1a1a1a;
     }
 
-    .description {
-      font-size: 16px;
-      color: #4B5563;
-      line-height: 1.6;
-      margin-bottom: 40px;
+    /* Section header with label + badge */
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
     }
 
-    /* Section label */
     .section-label {
       font-size: 13px;
       font-weight: 600;
       color: #9CA3AF;
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      margin-bottom: 16px;
+    }
+
+    .badge {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 20px;
+      letter-spacing: 0.3px;
+    }
+
+    .badge.required {
+      background: #FEE2E2;
+      color: #DC2626;
+    }
+
+    .badge.optional {
+      background: #F3F4F6;
+      color: #6B7280;
     }
 
     /* Upload zone — centered, tall, matches Vivid invoice upload */
     .upload-zone {
       border: 2px dashed #D1D5DB;
       border-radius: 16px;
-      padding: 64px 32px;
+      padding: 32px 32px;
       background: #F9FAFB;
       cursor: pointer;
       transition: all 0.2s ease;
@@ -478,10 +495,12 @@
 
     <!-- Title -->
     <h1>Upload store photos and company documents</h1>
-    <p class="description">Take photos of the client's store and upload the Gewerbeanmeldung to complete the POS terminal application.</p>
 
     <!-- ========== SECTION 1: Store Photos ========== -->
-    <div class="section-label">Store / Location photos</div>
+    <div class="section-header">
+      <div class="section-label">Store photos</div>
+      <span class="badge required">Required</span>
+    </div>
 
     <div id="storeUploadZone" class="upload-zone" onclick="document.getElementById('storeGallery').click()">
       <div class="upload-zone-icon">
@@ -517,7 +536,10 @@
     <div class="divider"></div>
 
     <!-- ========== SECTION 2: GEWA ========== -->
-    <div class="section-label">Gewerbeanmeldung (GEWA)</div>
+    <div class="section-header">
+      <div class="section-label">Gewerbeanmeldung (GEWA)</div>
+      <span class="badge optional">Optional</span>
+    </div>
 
     <div id="gewaUploadZone" class="upload-zone" onclick="document.getElementById('gewaGallery').click()">
       <div class="upload-zone-icon">
@@ -640,8 +662,9 @@
     }
 
     function updateCTA() {
+      // Store photos are required; GEWA is optional
       document.getElementById('submitBtn').disabled =
-        !(files.store.some(f => f.status === 'success') && files.gewa.some(f => f.status === 'success'));
+        !(files.store.some(f => f.status === 'success'));
     }
 
     function toggleComment(section) {
